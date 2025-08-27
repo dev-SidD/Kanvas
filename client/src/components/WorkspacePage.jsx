@@ -152,7 +152,7 @@ const WorkspacePage = () => {
           </div>
         </div>
       )}
-
+      
       {/* Boards Grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {boards.length > 0 ? (
@@ -174,7 +174,7 @@ const WorkspacePage = () => {
               </div>
               <h3 className="text-xl font-bold text-gray-800 group-hover:text-indigo-600 transition-colors mb-2">{board.title}</h3>
               <p className="text-gray-500 text-sm">
-                {board.lists?.length || 0} lists • {board.cards?.length || 0} cards
+                {board.lists?.length || 0} lists 
               </p>
             </div>
           ))

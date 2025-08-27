@@ -6,23 +6,26 @@ const Notification = require('../models/Notification');
 // ## CREATE A CARD
 exports.createCard = async (req, res) => {
   const { title, listId, boardId, members, dueDate } = req.body;
-  const senderId = req.user.user.id; 
+  const senderId = req.user.id; 
 
   try {
     const newCard = new Card({ title, listId, boardId, members, dueDate });
-    const card = await newCard.save();
+    await newCard.save();
 
-    await List.findByIdAndUpdate(listId, { $push: { cards: card._id } });
+    // ✅ FIX: Populate the card with member details before sending it to the client.
+    const populatedCard = await Card.findById(newCard._id).populate('members', 'name avatarUrl email');
+
+    await List.findByIdAndUpdate(listId, { $push: { cards: populatedCard._id } });
 
     if (members && members.length > 0) {
       await User.updateMany(
         { _id: { $in: members } },
-        { $push: { tasks: card._id } }
+        { $push: { tasks: populatedCard._id } }
       );
 
-      let message = `You were assigned to the new card "${card.title}"`;
-      if (card.dueDate) {
-        message += ` which is due on ${new Date(card.dueDate).toLocaleDateString()}`;
+      let message = `You were assigned to the new card "${populatedCard.title}"`;
+      if (populatedCard.dueDate) {
+        message += ` which is due on ${new Date(populatedCard.dueDate).toLocaleDateString()}`;
       }
 
       const notifications = members.map(memberId => ({
@@ -30,8 +33,8 @@ exports.createCard = async (req, res) => {
         sender: senderId,
         type: 'assignment',
         message: message,
-        boardId: card.boardId,
-        cardId: card._id
+        boardId: populatedCard.boardId,
+        cardId: populatedCard._id
       }));
       const createdNotifications = await Notification.insertMany(notifications);
 
@@ -40,14 +43,17 @@ exports.createCard = async (req, res) => {
       }
     }
     
-    req.io.to(boardId).emit('card_created', card);
+    // Emit the fully populated card object
+    req.io.to(boardId).emit('card_created', populatedCard);
     
-    res.status(201).json(card);
+    // Respond with the fully populated card object
+    res.status(201).json(populatedCard);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
   }
 };
+
 
 // ## GET ALL CARDS FOR A BOARD
 exports.getCardsByBoard = async (req, res) => {
