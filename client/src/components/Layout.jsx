@@ -421,7 +421,7 @@ const Layout = ({ children }) => {
                 </header>
 
                 {/* Main Content */}
-                <main className="flex-grow overflow-y-auto p-3 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+                <main className="flex-grow overflow-y-auto p-6 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
                     <div className="max-w-7xl mx-auto">
                         {children}
                     </div>
