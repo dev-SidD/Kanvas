@@ -304,7 +304,7 @@ function Calendar() {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('Authentication token not found. Please log in.');
 
-        const response = await fetch('http://localhost:5001/api/users/me', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/me`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
 

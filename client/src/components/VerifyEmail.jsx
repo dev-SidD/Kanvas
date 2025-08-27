@@ -41,7 +41,7 @@ const VerifyEmailPage = () => {
     const verifyToken = async () => {
       hasVerified.current = true; // ✅ 3. Set the flag to true immediately
       try {
-        await axios.get(`http://localhost:5001/api/auth/verify/${token}`);
+        await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/verify/${token}`);
         setStatus('success');
         setMessage('Your account has been successfully activated.');
       } catch (error) {

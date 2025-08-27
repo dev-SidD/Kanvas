@@ -51,7 +51,7 @@ const ProfilePage = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5001/api/users/me", {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const fetchedUser = res.data;
@@ -112,7 +112,7 @@ const ProfilePage = () => {
         avatarUrl: formData.avatarUrl,
       };
       const res = await axios.put(
-        "http://localhost:5001/api/users/me",
+        `${import.meta.env.VITE_API_URL}/api/users/me`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -127,7 +127,7 @@ const ProfilePage = () => {
     if (!window.confirm("Are you sure? This action cannot be undone.")) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.delete("http://localhost:5001/api/users/me", {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/users/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       localStorage.removeItem("token");

@@ -81,10 +81,10 @@ const Layout = ({ children }) => {
                 }
 
                 const config = { headers: { 'Authorization': `Bearer ${token}` } };
-                const userRes = await axios.get('http://localhost:5001/api/users/me', config);
+                const userRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, config);
                 setUser(userRes.data);
 
-                const notificationsRes = await axios.get('http://localhost:5001/api/notifications', config);
+                const notificationsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/notifications`, config);
                 setNotifications(notificationsRes.data);
                 if (notificationsRes.data.some(n => !n.isRead)) {
                     setHasNewNotification(true);
@@ -139,7 +139,7 @@ const Layout = ({ children }) => {
         try {
             const token = localStorage.getItem('token');
             const config = { headers: { 'Authorization': `Bearer ${token}` } };
-            await axios.patch('http://localhost:5001/api/notifications/read-all', {}, config);
+            await axios.patch(`${import.meta.env.VITE_API_URL}/api/notifications/read-all`, {}, config);
             setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
             setHasNewNotification(false);
         } catch (error) {
@@ -152,7 +152,7 @@ const Layout = ({ children }) => {
             if (!notif.isRead) {
                 const token = localStorage.getItem('token');
                 const config = { headers: { 'Authorization': `Bearer ${token}` } };
-                await axios.patch(`http://localhost:5001/api/notifications/${notif._id}/read`, {}, config);
+                await axios.patch(`${import.meta.env.VITE_API_URL}/api/notifications/${notif._id}/read`, {}, config);
                 setNotifications(prev => prev.map(n => n._id === notif._id ? { ...n, isRead: true } : n));
             }
             setShowNotifications(false);

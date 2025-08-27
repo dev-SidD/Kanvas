@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5001/api/lists';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/lists`;
 
 const getTokenConfig = () => ({
   headers: { 'x-auth-token': localStorage.getItem('token') }

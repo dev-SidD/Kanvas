@@ -56,7 +56,7 @@ const Register = () => {
     setError('');
     setSuccessMessage('');
     try {
-      const res = await axios.post('http://localhost:5001/api/auth/register', { name, email, password });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, { name, email, password });
       setSuccessMessage(res.data.msg); 
     } catch (err) {
       console.error(err.response?.data);

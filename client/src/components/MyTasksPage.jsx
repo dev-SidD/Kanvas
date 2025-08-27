@@ -17,7 +17,7 @@ const MyTasksPage = () => {
             'Authorization': `Bearer ${token}` 
           } 
         };
-        const res = await axios.get('http://localhost:5001/api/users/me', config);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, config);
         setTasks(res.data.tasks || []);
       } catch (error) {
         console.error("Failed to fetch tasks", error);

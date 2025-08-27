@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5001/api/comments';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/comments`;
 
 const getTokenConfig = () => ({
   headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }

@@ -31,7 +31,7 @@ const BoardView = () => {
         const config = { headers: { 'Authorization': `Bearer ${token}` } };
         const boardRes = await fetchBoardById(boardId);
         setBoard(boardRes.data);
-        const userRes = await axios.get('http://localhost:5001/api/users/me', config);
+        const userRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, config);
         setUser(userRes.data);
       } catch (error) {
         console.error("Failed to fetch data", error);

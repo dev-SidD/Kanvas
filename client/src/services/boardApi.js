@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5001/api/boards';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/boards`;
 
 // Helper function to get the auth token and create a config object
 const getTokenConfig = () => {

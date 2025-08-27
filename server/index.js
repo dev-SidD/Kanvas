@@ -17,7 +17,7 @@ const server = http.createServer(app);
 // 4. Initialize Socket.IO and configure CORS
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // The origin of your React client
+    origin: process.env.FRONTEND_URL, // The origin of your React client
     methods: ["GET", "POST"]
   }
 });
