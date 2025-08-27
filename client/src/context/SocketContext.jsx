@@ -19,7 +19,7 @@ export const SocketProvider = ({ children }) => {
 
     if (token) {
       // Connect to your backend server.
-      const newSocket = io('http://localhost:5001'); // Your backend URL
+     const newSocket = io(import.meta.env.VITE_API_URL); // Your backend URL
       setSocket(newSocket);
 
       // Clean up the connection when the component unmounts or the user logs out.
