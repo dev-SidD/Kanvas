@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { SocketProvider } from './context/SocketContext'; // ✅ 1. Import the SocketProvider
+import { SocketProvider } from './context/SocketContext';
+
 // Import Components
 import Register from './components/Register';
 import Login from './components/Login';
@@ -13,16 +14,20 @@ import Layout from './components/Layout';
 import Profile from './components/ProfilePage';
 import MyTasksPage from './components/MyTasksPage';
 import Calendar from './components/Calendar';
+import VerifyEmailPage from './components/VerifyEmail'; // 1. Import the component
 
 function App() {
   return (
-    // ✅ 2. Wrap the entire application with the SocketProvider
     <SocketProvider>
       <Router>
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
+          {/* ✅ 2. Add the single, correct route for email verification */}
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
+
 
           {/* Private Routes wrapped in the Layout */}
           <Route 
@@ -49,7 +54,6 @@ function App() {
             path="/calendar" 
             element={<PrivateRoute><Layout><Calendar /></Layout></PrivateRoute>} 
           />
-          {/* BoardView - also inside Layout */}
           <Route 
             path="/board/:boardId"
             element={<PrivateRoute><Layout><BoardView /></Layout></PrivateRoute>} 

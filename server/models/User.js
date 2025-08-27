@@ -16,17 +16,25 @@ const UserSchema = new mongoose.Schema({
   },
   avatarUrl: {
     type: String,
-    default: '', // Optional: provide a default avatar
+    default: '',
   },
   workspaces: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Workspace', // This creates the reference to the Workspace model
+    ref: 'Workspace',
   }],
-  // New field to store references to tasks assigned to this user
   tasks: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Card', // This creates the reference to the Card model
+    ref: 'Card',
   }],
-}, { timestamps: true }); // Automatically adds createdAt and updatedAt fields
+  // --- NEW FIELDS FOR EMAIL VERIFICATION ---
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    select: false, // This will hide the token from default query results
+  },
+}, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);
