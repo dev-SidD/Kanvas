@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { DndContext, closestCorners, DragOverlay } from '@dnd-kit/core';
+import { DndContext, closestCorners, DragOverlay, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, horizontalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { useSocket } from '../context/SocketContext';
 import { Plus, Users, Star, MoreHorizontal, Loader2 } from 'lucide-react';
@@ -22,6 +22,18 @@ const BoardView = () => {
   const [newListName, setNewListName] = useState('');
   const [selectedCard, setSelectedCard] = useState(null);
   const [isAddingList, setIsAddingList] = useState(false);
+
+  // ✅ 1. Configure sensors for both mouse (PointerSensor) and touch (TouchSensor) input
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      // Press delay for touch devices to allow scrolling vs. dragging
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    })
+  );
 
   // Initial data loading
   useEffect(() => {
@@ -221,7 +233,8 @@ const BoardView = () => {
   }
 
   return (
-    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
+    // ✅ 3. Pass the configured sensors to the DndContext
+    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCorners} sensors={sensors}>
       <div className="flex flex-col h-full">
         {/* Header Section */}
         <div className="mb-8">
