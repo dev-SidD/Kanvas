@@ -95,6 +95,7 @@ const Layout = ({ children }) => {
                     handleLogout();
                 } else {
                     console.error("Could not fetch initial data", error);
+                    handleLogout();
                 }
             }
         };
