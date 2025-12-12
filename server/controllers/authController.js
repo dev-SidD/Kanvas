@@ -19,17 +19,50 @@ exports.registerUser = async (req, res) => {
     // Hash the password before saving
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
+
+    /* // ==========================================
+    // OPTION 1: EMAIL VERIFICATION (PRODUCTION)
+    // Uncomment this block when you are ready for real users
+    // ==========================================
     
-    // Generate and save a verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
     user.verificationToken = verificationToken;
+    user.isVerified = false; // Ensure your User model has this field
     
     await user.save();
     
-    // Send the verification email
-    // await sendVerificationEmail(user.email, verificationToken);
+    await sendVerificationEmail(user.email, verificationToken);
+    
+    return res.status(201).json({ 
+      msg: 'Registration successful. Please check your email to verify your account.' 
+    });
+    */
 
-    // res.status(201).json({ msg: 'Registration successful. Please check your email to verify your account.' });
+    // ==========================================
+    // OPTION 2: DIRECT LOGIN (TESTING ONLY)
+    // Use this for development to bypass email check
+    // ==========================================
+
+    // 1. If your Login checks for 'isVerified', force it to true for testing
+    // user.isVerified = true; 
+
+    await user.save();
+
+    const payload = {
+      user: {
+        id: user.id
+      }
+    };
+
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: 360000 },
+      (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      }
+    );
 
   } catch (err) {
     console.error(err.message);
@@ -62,7 +95,7 @@ exports.loginUser = async (req, res) => {
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: '5h' },
+      { expiresIn: '360000' },
       (err, token) => {
         if (err) throw err;
         res.json({ token });
