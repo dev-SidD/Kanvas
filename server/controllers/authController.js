@@ -54,16 +54,6 @@ exports.registerUser = async (req, res) => {
       }
     };
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: 360000 },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
-
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
