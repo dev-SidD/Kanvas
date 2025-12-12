@@ -27,6 +27,7 @@ exports.registerUser = async (req, res) => {
     await user.save();
 
     // Send the verification email
+    console.log("sending email");
     await sendVerificationEmail(user.email, verificationToken);
 
     res.status(201).json({ msg: 'Registration successful. Please check your email to verify your account.' });
