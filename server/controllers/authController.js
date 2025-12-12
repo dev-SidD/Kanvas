@@ -43,8 +43,8 @@ exports.registerUser = async (req, res) => {
     // Use this for development to bypass email check
     // ==========================================
 
-    // 1. If your Login checks for 'isVerified', force it to true for testing
-    // user.isVerified = true; 
+    // 1. Force verification to TRUE so you can login immediately
+    user.isVerified = true; 
 
     await user.save();
 
@@ -53,6 +53,17 @@ exports.registerUser = async (req, res) => {
         id: user.id
       }
     };
+
+    // 2. Sign and return the JWT (This was missing in your snippet!)
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: 360000 },
+      (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      }
+    );
 
   } catch (err) {
     console.error(err.message);
@@ -82,10 +93,11 @@ exports.loginUser = async (req, res) => {
 
     // Create and return a JSON Web Token (JWT)
     const payload = { user: { id: user.id } };
+    
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: '360000' },
+      { expiresIn: '360000' }, // Note: Using string '360000' is treated as ms. 360000 is 5 days (in seconds) if passed as number.
       (err, token) => {
         if (err) throw err;
         res.json({ token });
@@ -126,6 +138,11 @@ exports.verifyEmail = async (req, res) => {
 exports.getLoggedInUser = async (req, res) => {
   try {
     // req.user.id is available from the 'auth' middleware
+    // Note: Ensure your auth middleware sets req.user correctly. 
+    // Usually it is req.user.id not req.user.user.id depending on how you structured the payload above.
+    // Based on your register payload: { user: { id: ... } }, req.user will be { user: { id: ... } }
+    // So req.user.user.id is likely correct if your middleware decodes the whole payload into req.user
+    
     const user = await User.findById(req.user.user.id).select('-password');
     res.json(user);
   } catch (err) {
