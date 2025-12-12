@@ -3,18 +3,23 @@ const nodemailer = require('nodemailer');
 const sendVerificationEmail = async (email, token) => {
   console.log("Email User:", process.env.EMAIL_USER); 
   console.log("Frontend URL:", process.env.FRONTEND_URL);
+
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',  // ✅ Explicitly state Google's server
-    port: 587,               // ✅ Use the secure port (SSL/TLS)
-    secure: true,            // ✅ Must be true for port 465
+    host: 'smtp.gmail.com',
+    port: 587,              // ✅ Port 587 is standard for cloud hosting
+    secure: false,          // ✅ Must be FALSE for port 587
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
+    // Optional: accurate logging to see SMTP communication
+    logger: true,
+    debug: true
   });
 
   const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
-  console.log(verificationUrl)
+  console.log("Verification Link:", verificationUrl);
+
   const mailOptions = {
     from: `"Kanvas" <${process.env.EMAIL_USER}>`,
     to: email,
@@ -26,9 +31,15 @@ const sendVerificationEmail = async (email, token) => {
     `,
   };
 
-  // This will throw an error if it fails, which your controller needs to catch
-  console.log("sending..")
-  await transporter.sendMail(mailOptions);
+  console.log("sending..");
+  
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Message sent: %s", info.messageId); // ✅ Log success ID
+  } catch (error) {
+    console.error("Error sending email:", error); // ✅ Log exact error
+    throw error; // Throw so controller handles it
+  }
 };
 
 module.exports = sendVerificationEmail;
