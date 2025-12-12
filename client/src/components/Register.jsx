@@ -46,42 +46,21 @@ const Register = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
+    // ✅ Add password match validation
     if (password !== password2) {
-      setError('Passwords do not match');
-      return;
+        setError('Passwords do not match');
+        return;
     }
 
     setIsLoading(true);
     setError('');
-    
+    setSuccessMessage('');
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
-        name,
-        email,
-        password
-      });
-
-      // == CHECK 1: Did we get a Token? (Testing Mode / Auto-Login) ==
-      if (res.data.token) {
-        // 1. Store the token in localStorage
-        localStorage.setItem('token', res.data.token);
-        
-        // 2. (Optional) If you use an AuthContext, dispatch the login action here
-        // dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
-
-        // 3. Redirect immediately to the Dashboard
-        navigate('/dashboard'); 
-      } 
-      
-      // == CHECK 2: Did we get a Message? (Email Verification Mode) ==
-      else if (res.data.msg) {
-        setSuccessMessage(res.data.msg);
-      }
-
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, { name, email, password });
+      setSuccessMessage(res.data.msg); 
     } catch (err) {
       console.error(err.response?.data);
-      const errorMessage = err.response?.data?.msg || 'Registration failed. Please try again.';
-      setError(errorMessage);
+      setError(err.response?.data?.msg || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

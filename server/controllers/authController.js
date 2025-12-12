@@ -19,51 +19,17 @@ exports.registerUser = async (req, res) => {
     // Hash the password before saving
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
-
-    /* // ==========================================
-    // OPTION 1: EMAIL VERIFICATION (PRODUCTION)
-    // Uncomment this block when you are ready for real users
-    // ==========================================
     
+    // Generate and save a verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
     user.verificationToken = verificationToken;
-    user.isVerified = false; // Ensure your User model has this field
-    
+
     await user.save();
-    
+
+    // Send the verification email
     await sendVerificationEmail(user.email, verificationToken);
-    
-    return res.status(201).json({ 
-      msg: 'Registration successful. Please check your email to verify your account.' 
-    });
-    */
 
-    // ==========================================
-    // OPTION 2: DIRECT LOGIN (TESTING ONLY)
-    // Use this for development to bypass email check
-    // ==========================================
-
-    // 1. Force verification to TRUE so you can login immediately
-    user.isVerified = true; 
-
-    await user.save();
-
-    const payload = {
-      user: {
-        id: user.id
-      }
-    };
-
-    // 2. Sign and return the JWT (This was missing in your snippet!)
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: 360000 },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
+    res.status(201).json({ msg: 'Registration successful. Please check your email to verify your account.' });
 
   } catch (err) {
     console.error(err.message);
@@ -93,11 +59,10 @@ exports.loginUser = async (req, res) => {
 
     // Create and return a JSON Web Token (JWT)
     const payload = { user: { id: user.id } };
-    
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: '360000' }, // Note: Using string '360000' is treated as ms. 360000 is 5 days (in seconds) if passed as number.
+      { expiresIn: '5h' },
       (err, token) => {
         if (err) throw err;
         res.json({ token });
@@ -138,11 +103,6 @@ exports.verifyEmail = async (req, res) => {
 exports.getLoggedInUser = async (req, res) => {
   try {
     // req.user.id is available from the 'auth' middleware
-    // Note: Ensure your auth middleware sets req.user correctly. 
-    // Usually it is req.user.id not req.user.user.id depending on how you structured the payload above.
-    // Based on your register payload: { user: { id: ... } }, req.user will be { user: { id: ... } }
-    // So req.user.user.id is likely correct if your middleware decodes the whole payload into req.user
-    
     const user = await User.findById(req.user.user.id).select('-password');
     res.json(user);
   } catch (err) {
