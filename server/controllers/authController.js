@@ -7,7 +7,7 @@ const sendVerificationEmail = require('../utils/sendEmail');
 // ## REGISTER A NEW USER
 exports.registerUser = async (req, res) => {
   const { name, email, password } = req.body;
-
+  
   try {
     let user = await User.findOne({ email });
     if (user) {
@@ -15,15 +15,16 @@ exports.registerUser = async (req, res) => {
     }
 
     user = new User({ name, email, password });
-
+    
     // Hash the password before saving
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
     
     // Generate and save a verification token
+    console.log("hello")
     const verificationToken = crypto.randomBytes(32).toString('hex');
     user.verificationToken = verificationToken;
-
+    console.log("hello2")
     await user.save();
 
     // Send the verification email
