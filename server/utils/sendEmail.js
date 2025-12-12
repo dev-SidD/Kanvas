@@ -1,6 +1,8 @@
 const nodemailer = require('nodemailer');
 
 const sendVerificationEmail = async (email, token) => {
+  console.log("Email User:", process.env.EMAIL_USER); 
+  console.log("Frontend URL:", process.env.FRONTEND_URL);
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',  // ✅ Explicitly state Google's server
     port: 465,               // ✅ Use the secure port (SSL/TLS)
