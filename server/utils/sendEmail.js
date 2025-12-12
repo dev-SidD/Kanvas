@@ -1,25 +1,18 @@
+// utils/sendEmail.js
 const nodemailer = require('nodemailer');
 
 const sendVerificationEmail = async (email, token) => {
-  // Debug logs to confirm env vars are loading
-  console.log("Email User:", process.env.EMAIL_USER); 
-  console.log("Frontend URL:", process.env.FRONTEND_URL);
-
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,              // ✅ Port 587 is the standard for cloud servers
-    secure: false,          // ✅ CRITICAL FIX: Must be FALSE for Port 587
+    service: 'gmail',
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
-    tls: {
-      rejectUnauthorized: false // Helps avoid some certificate errors on cloud
-    }
   });
 
+  // Use the environment variable for the URL
   const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
-  
+
   const mailOptions = {
     from: `"Kanvas" <${process.env.EMAIL_USER}>`,
     to: email,
@@ -31,10 +24,7 @@ const sendVerificationEmail = async (email, token) => {
     `,
   };
 
-  console.log("sending..");
-  
-  // Send the email
-  try {
+   try {
     const info = await transporter.sendMail(mailOptions);
     console.log("Email sent successfully! Message ID:", info.messageId);
   } catch (error) {
