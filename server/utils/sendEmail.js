@@ -1,16 +1,16 @@
-// utils/sendEmail.js
 const nodemailer = require('nodemailer');
 
 const sendVerificationEmail = async (email, token) => {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',  // ✅ Explicitly state Google's server
+    port: 465,               // ✅ Use the secure port (SSL/TLS)
+    secure: true,            // ✅ Must be true for port 465
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
   });
 
-  // Use the environment variable for the URL
   const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
 
   const mailOptions = {
@@ -24,6 +24,7 @@ const sendVerificationEmail = async (email, token) => {
     `,
   };
 
+  // This will throw an error if it fails, which your controller needs to catch
   await transporter.sendMail(mailOptions);
 };
 
