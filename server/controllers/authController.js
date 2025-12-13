@@ -9,30 +9,71 @@ exports.registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
+    // Input validation
+    if (!name || !email || !password) {
+      return res.status(400).json({ msg: 'Please provide all required fields (name, email, password)' });
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ msg: 'Please provide a valid email address' });
+    }
+
+    // Password validation (minimum 6 characters)
+    if (password.length < 6) {
+      return res.status(400).json({ msg: 'Password must be at least 6 characters long' });
+    }
+
+    // Check if user already exists
     let user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({ msg: 'User already exists' });
     }
 
-    user = new User({ name, email, password });
-
-    // Hash the password before saving
+    // Hash the password before creating user
     const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
     
-    // Generate and save a verification token
+    // Generate verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
-    user.verificationToken = verificationToken;
     
-    // Send the verification email
-    console.log("Sending Email");
-    await sendVerificationEmail(user.email, verificationToken);
+    // Create user with hashed password
+    user = new User({ 
+      name, 
+      email, 
+      password: hashedPassword,
+      verificationToken 
+    });
+    
+    // Save user first
     await user.save();
+    
+    // Send verification email (if this fails, user is still created and can request resend)
+    try {
+      console.log("Sending Email to:", user.email);
+      await sendVerificationEmail(user.email, verificationToken);
+      console.log("Verification email sent successfully");
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError.message);
+      console.error('Full email error:', emailError);
+      // User is still created, but email wasn't sent
+      // Return a more informative error to the client
+      return res.status(500).json({ 
+        msg: 'User registered but failed to send verification email. Please contact support.',
+        error: emailError.message 
+      });
+    }
+    
     res.status(201).json({ msg: 'Registration successful. Please check your email to verify your account.' });
 
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    // Handle duplicate email error from MongoDB
+    if (err.code === 11000) {
+      return res.status(400).json({ msg: 'User already exists' });
+    }
+    res.status(500).json({ msg: 'Server error', error: err.message });
   }
 };
 
