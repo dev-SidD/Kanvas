@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/User');
-const sendVerificationEmail = require('../utils/sendEmail');
+// const sendVerificationEmail = require('../utils/sendEmail'); // Commented out - email verification disabled for now
 
 // ## REGISTER A NEW USER
 exports.registerUser = async (req, res) => {
@@ -35,37 +35,49 @@ exports.registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     
+    // EMAIL VERIFICATION CODE (COMMENTED OUT - TO RE-ENABLE IN FUTURE)
     // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
+    // const verificationToken = crypto.randomBytes(32).toString('hex');
     
     // Create user with hashed password
+    // Email verification disabled - users are automatically verified
     user = new User({ 
       name, 
       email, 
       password: hashedPassword,
-      verificationToken 
+      isVerified: true, // Auto-verify users when email verification is disabled
+      // verificationToken // Commented out - not needed when verification is disabled
     });
     
-    // Save user first
+    // Save user
     await user.save();
+    
+    // EMAIL VERIFICATION CODE (COMMENTED OUT - TO RE-ENABLE IN FUTURE)
+    // To re-enable email verification:
+    // 1. Uncomment the sendVerificationEmail import at the top
+    // 2. Uncomment the verificationToken generation above
+    // 3. Add verificationToken to user creation
+    // 4. Set isVerified: false in user creation
+    // 5. Uncomment the email sending code below
+    // 6. Update the success message to mention email verification
+    // 7. Uncomment the email verification check in loginUser function
     
     // Send verification email asynchronously (don't block registration)
     // Use setImmediate to send email in the next event loop cycle
-    setImmediate(async () => {
-      try {
-        console.log("Sending Email to:", user.email);
-        await sendVerificationEmail(user.email, verificationToken);
-        console.log("Verification email sent successfully");
-      } catch (emailError) {
-        console.error('Failed to send verification email:', emailError.message);
-        console.error('Full email error:', emailError);
-        // Log the error but don't fail registration
-        // User can request email resend later if needed
-      }
-    });
+    // setImmediate(async () => {
+    //   try {
+    //     console.log("Sending Email to:", user.email);
+    //     await sendVerificationEmail(user.email, verificationToken);
+    //     console.log("Verification email sent successfully");
+    //   } catch (emailError) {
+    //     console.error('Failed to send verification email:', emailError.message);
+    //     console.error('Full email error:', emailError);
+    //     // Log the error but don't fail registration
+    //     // User can request email resend later if needed
+    //   }
+    // });
     
-    // Return success immediately - email will be sent in background
-    res.status(201).json({ msg: 'Registration successful. Please check your email to verify your account.' });
+    res.status(201).json({ msg: 'Registration successful. You can now log in.' });
 
   } catch (err) {
     console.error(err.message);
@@ -92,10 +104,11 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ msg: 'Invalid credentials' });
     }
 
+    // EMAIL VERIFICATION CHECK (COMMENTED OUT - TO RE-ENABLE IN FUTURE)
     // Check if the user's email is verified
-    if (!user.isVerified) {
-        return res.status(401).json({ msg: 'Please verify your email address before logging in.' });
-    }
+    // if (!user.isVerified) {
+    //     return res.status(401).json({ msg: 'Please verify your email address before logging in.' });
+    // }
 
     // Create and return a JSON Web Token (JWT)
     const payload = { user: { id: user.id } };
