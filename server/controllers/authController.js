@@ -49,22 +49,22 @@ exports.registerUser = async (req, res) => {
     // Save user first
     await user.save();
     
-    // Send verification email (if this fails, user is still created and can request resend)
-    try {
-      console.log("Sending Email to:", user.email);
-      await sendVerificationEmail(user.email, verificationToken);
-      console.log("Verification email sent successfully");
-    } catch (emailError) {
-      console.error('Failed to send verification email:', emailError.message);
-      console.error('Full email error:', emailError);
-      // User is still created, but email wasn't sent
-      // Return a more informative error to the client
-      return res.status(500).json({ 
-        msg: 'User registered but failed to send verification email. Please contact support.',
-        error: emailError.message 
-      });
-    }
+    // Send verification email asynchronously (don't block registration)
+    // Use setImmediate to send email in the next event loop cycle
+    setImmediate(async () => {
+      try {
+        console.log("Sending Email to:", user.email);
+        await sendVerificationEmail(user.email, verificationToken);
+        console.log("Verification email sent successfully");
+      } catch (emailError) {
+        console.error('Failed to send verification email:', emailError.message);
+        console.error('Full email error:', emailError);
+        // Log the error but don't fail registration
+        // User can request email resend later if needed
+      }
+    });
     
+    // Return success immediately - email will be sent in background
     res.status(201).json({ msg: 'Registration successful. Please check your email to verify your account.' });
 
   } catch (err) {

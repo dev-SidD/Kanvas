@@ -1,6 +1,16 @@
 // utils/sendEmail.js
 const nodemailer = require('nodemailer');
 
+// Helper function to add timeout to promises
+const withTimeout = (promise, timeoutMs) => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`Operation timed out after ${timeoutMs}ms`)), timeoutMs)
+    )
+  ]);
+};
+
 const sendVerificationEmail = async (email, token) => {
   // Check if required environment variables are set
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
@@ -22,11 +32,11 @@ const sendVerificationEmail = async (email, token) => {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      // Add timeout settings to prevent hanging
+      connectionTimeout: 10000, // 10 seconds
+      socketTimeout: 10000, // 10 seconds
+      greetingTimeout: 10000, // 10 seconds
     });
-
-    // Verify transporter configuration
-    await transporter.verify();
-    console.log('Email transporter is ready');
 
     // Use the environment variable for the URL
     const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
@@ -44,7 +54,9 @@ const sendVerificationEmail = async (email, token) => {
       `,
     };
 
-    const info = await transporter.sendMail(mailOptions);
+    // Send email with timeout (15 seconds)
+    const sendPromise = transporter.sendMail(mailOptions);
+    const info = await withTimeout(sendPromise, 15000);
     console.log("Email sent successfully! Message ID:", info.messageId);
     return info;
   } catch (error) {
