@@ -1,9 +1,7 @@
 <div align="center">
 
-
-
 # 🧩 **Kanvas**
-### _A Project Management Web Application_
+### _A MERN-Based Project Management Web Application_
 
 🗂️ Organize • 👥 Collaborate • 📈 Track Progress  
 
@@ -13,8 +11,9 @@
 
 <br/><br/>
 
-![MERN](https://img.shields.io/badge/Stack-MERN-00c9a7?style=for-the-badge)
-![Vite](https://img.shields.io/badge/Bundler-Vite-purple?style=for-the-badge)
+![Stack](https://img.shields.io/badge/Stack-MERN-00c9a7?style=for-the-badge)
+![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-blue?style=for-the-badge)
+![Backend](https://img.shields.io/badge/Backend-Node%20%26%20Express-green?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)
 
 </div>
@@ -23,32 +22,36 @@
 
 ## ✨ Overview
 
-**Kanvas** is a full-stack **project management web application** designed to help users  
-plan projects, manage tasks, and visualize progress efficiently.
+**Kanvas** is a full-stack **project management web application** built using the **MERN stack**.  
+It enables users to **organize projects using boards and tasks**, following a **Kanban-style workflow**.
 
-It provides a **board-based workflow** where tasks can be created, updated, and tracked  
-with an intuitive and responsive user interface.
+The application focuses on:
+- Structured task management
+- Clean and intuitive UI
+- Secure authentication
+- Scalable backend architecture
 
 ---
 
-## 🌟 Key Features
+## 🌟 Core Features
 
 <table>
 <tr>
 <td width="50%">
 
 ### 🔐 Authentication
-- Secure user login & signup
+- User registration & login
 - JWT-based authentication
-- Protected routes
+- Protected API routes
+- Auth state managed via Context API
 
 </td>
 <td width="50%">
 
-### 📋 Boards & Projects
-- Create multiple boards
-- Organize work by project
-- Visual task grouping
+### 📁 Boards (Projects)
+- Create and manage boards
+- Boards act as project containers
+- Fetch user-specific boards
 
 </td>
 </tr>
@@ -57,18 +60,18 @@ with an intuitive and responsive user interface.
 <td width="50%">
 
 ### ✅ Task Management
-- Create, edit & delete tasks
+- Create, update & delete tasks
 - Task status tracking
-- Priority-based workflow
-- Clean Kanban-style layout
+- Kanban-style workflow (To-do / In-progress / Done)
+- Tasks linked to boards
 
 </td>
 <td width="50%">
 
-### 📅 Productivity Tools
-- Calendar view
-- Board view for tasks
-- Smooth drag & interaction flow
+### 📅 Calendar View
+- Calendar-based task visualization
+- Tasks mapped to dates
+- Alternate productivity view
 
 </td>
 </tr>
@@ -85,6 +88,8 @@ with an intuitive and responsive user interface.
 - Vite
 - JavaScript (ES6+)
 - HTML5 & CSS3
+- Context API
+- REST API integration
 
 ### ⚙️ Backend
 <img src="https://skillicons.dev/icons?i=nodejs,express,mongodb" />
@@ -92,12 +97,14 @@ with an intuitive and responsive user interface.
 - Node.js
 - Express.js
 - MongoDB
-- REST APIs
+- Mongoose
+- JWT Authentication
 
 ### 🧰 Tools
 <img src="https://skillicons.dev/icons?i=git,github" />
 
 - Git & GitHub
+- VS Code
 
 ---
 
@@ -112,23 +119,53 @@ Kanvas/
 │   │   │   ├── BoardView.jsx
 │   │   │   ├── Calendar.jsx
 │   │   │   ├── Navbar.jsx
+│   │   │   ├── Sidebar.jsx
 │   │   │   └── TaskCard.jsx
-│   │   ├── assets/
+│   │   │
+│   │   ├── pages/
+│   │   │   ├── Login.jsx
+│   │   │   ├── Register.jsx
+│   │   │   └── Dashboard.jsx
+│   │   │
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx
+│   │   │
+│   │   ├── services/
+│   │   │   └── api.js
+│   │   │
 │   │   ├── App.jsx
 │   │   └── main.jsx
-│   └── package.json
+│   │
+│   ├── package.json
+│   └── vite.config.js
 │
 ├── server/
 │   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── boardController.js
+│   │   └── taskController.js
+│   │
 │   ├── models/
+│   │   ├── User.js
+│   │   ├── Board.js
+│   │   └── Task.js
+│   │
 │   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── boardRoutes.js
+│   │   └── taskRoutes.js
+│   │
+│   ├── middleware/
+│   │   └── authMiddleware.js
+│   │
+│   ├── config/
+│   │   └── db.js
+│   │
 │   └── index.js
 │
 ├── .env
 └── README.md
 ```
----
-
 ### ⚙️ Environment Variables
 
 Create a .env file inside the server/ directory:
