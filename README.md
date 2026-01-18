@@ -2,7 +2,6 @@
 
 A modern, real-time Kanban-style project management application built with React and Node.js. Kanvas allows teams to collaborate effectively with workspaces, boards, lists, and cards with real-time updates and notifications.
 
-![Kanvas Logo](./client/public/vite.svg)
 
 ## 🚀 Features
 
@@ -118,9 +117,6 @@ cd client
 npm run dev
 ```
 
-The application will be available at:
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000
 
 ## 📖 Usage
 
